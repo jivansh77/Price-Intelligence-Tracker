@@ -1,0 +1,41 @@
+/* =========================================================================
+   App Layout
+   ========================================================================= */
+
+.app-container {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* --- Header --------------------------------------------------------------- */
+
+.app-header {
+  text-align: center;
+}
+
+.app-title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #94a3b8;
+}
+
+/* --- Footer --------------------------------------------------------------- */
+
+.app-footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #475569;
+  padding-bottom: 1rem;
+}

@@ -1,0 +1,91 @@
+/* =========================================================================
+   ResultCard Styles
+   ========================================================================= */
+
+.result-card {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 1rem;
+  padding: 1.75rem 2rem;
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-heading {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #38bdf8;
+  margin-bottom: 1.25rem;
+}
+
+/* --- Grid layout ---------------------------------------------------------- */
+
+.result-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.result-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #f1f5f9;
+}
+
+.result-price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #34d399;
+}
+
+/* --- Badges --------------------------------------------------------------- */
+
+.result-badge {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badge-immediate {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.badge-hold {
+  background: rgba(52, 211, 153, 0.2);
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
+.badge-monitor {
+  background: rgba(250, 204, 21, 0.2);
+  color: #fde68a;
+  border: 1px solid rgba(250, 204, 21, 0.4);
+}
