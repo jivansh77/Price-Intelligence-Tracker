@@ -12,6 +12,14 @@ A prototype web application that helps Direct-to-Consumer (D2C) brands set optim
 | Backend  | Node.js + Express           |
 | Database | In-memory (demo)            |
 
+### Vercel Deployment
+
+To deploy the frontend to Vercel:
+
+1. **Set Root Directory**: In your Vercel project settings, go to **Settings → General → Root Directory** and set it to `frontend`. (The repo root has no build; the React app lives in `frontend/`.)
+2. **Build settings** (usually auto-detected): Build Command `npm run build`, Output Directory `build`.
+3. Redeploy after updating the Root Directory.
+
 ### Future AWS Integration
 
 - **DynamoDB** – Replace in-memory storage with persistent NoSQL database.
