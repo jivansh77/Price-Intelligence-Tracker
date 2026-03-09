@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 5000;
 // Enable CORS so the React frontend (localhost:3000) can call this API.
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
     methods: ["GET", "POST"],
   })
 );
