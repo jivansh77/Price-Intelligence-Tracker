@@ -14,7 +14,9 @@ import "./PricingForm.css";
 
 // Base URL of the pricing API (local development).
 // TODO: Update to EC2 public IP after deployment.
-const API_URL = "http://localhost:5000/api/price";
+const API_URL = process.env.REACT_APP_BACKEND_URL 
+  ? `${process.env.REACT_APP_BACKEND_URL}/api/price`
+  : "http://localhost:5000/api/price";
 
 function PricingForm() {
   // --- Form state ---------------------------------------------------------
