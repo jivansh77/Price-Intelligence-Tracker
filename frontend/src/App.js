@@ -3,9 +3,6 @@
  *
  * Root component for the Price Intelligence frontend.
  * Renders the header and the PricingForm.
- *
- * // TODO: After building, host static files on S3 and update API endpoint
- * //       to the EC2 public IP.
  */
 
 import React from "react";

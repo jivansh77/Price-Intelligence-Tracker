@@ -3,17 +3,13 @@
  *
  * Renders a form for users to input their product pricing data, sends it to
  * the backend API, and displays the optimal price band + markdown timing.
- *
- * // TODO: After deploying the backend to EC2, update API_URL to the EC2
- * //       public IP address (e.g. http://<EC2_PUBLIC_IP>:5000/api/price).
  */
 
 import React, { useState } from "react";
 import ResultCard from "./ResultCard";
 import "./PricingForm.css";
 
-// Base URL of the pricing API (local development).
-// TODO: Update to EC2 public IP after deployment.
+// Set REACT_APP_BACKEND_URL to the EC2 public address for production builds.
 const API_URL = process.env.REACT_APP_BACKEND_URL 
   ? `${process.env.REACT_APP_BACKEND_URL}/api/price`
   : "http://localhost:5000/api/price";

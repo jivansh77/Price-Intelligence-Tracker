@@ -1,42 +1,68 @@
 /**
  * Price Intelligence Backend Server
  *
- * A simple Express server that exposes a POST /api/price endpoint.
- * It accepts product pricing data and returns an optimal price band
- * along with markdown timing recommendations for D2C brands.
- *
- * // TODO: Deploy this server on EC2 (t2.micro)
+ * Express server that exposes pricing endpoints.
+ * Uses DynamoDB for persistent storage when AWS credentials are available,
+ * falls back to in-memory storage for local development.
  */
 
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const {
+  DynamoDBDocumentClient,
+  PutCommand,
+  ScanCommand,
+} = require("@aws-sdk/lib-dynamodb");
 const { calculatePricing } = require("./pricingLogic");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ---------------------------------------------------------------------------
+// DynamoDB setup
+// ---------------------------------------------------------------------------
+
+const DYNAMODB_TABLE = process.env.DYNAMODB_TABLE || "PricingHistory";
+const AWS_REGION = process.env.AWS_REGION || "us-east-1";
+
+let dynamoDb = null;
+let useDynamo = false;
+
+try {
+  const client = new DynamoDBClient({ region: AWS_REGION });
+  dynamoDb = DynamoDBDocumentClient.from(client);
+  useDynamo = true;
+  console.log(`DynamoDB enabled – table: ${DYNAMODB_TABLE}, region: ${AWS_REGION}`);
+} catch (err) {
+  console.warn("DynamoDB client init failed; falling back to in-memory storage.", err.message);
+}
+
+const pricingHistory = [];
+
+// ---------------------------------------------------------------------------
 // Middleware
 // ---------------------------------------------------------------------------
 
-// Enable CORS so the React frontend (localhost:3000) can call this API.
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3000")
+  .split(",")
+  .map((o) => o.trim());
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST"],
   })
 );
 
-// Parse incoming JSON request bodies.
 app.use(bodyParser.json());
-
-// ---------------------------------------------------------------------------
-// In-memory storage (demo only)
-// ---------------------------------------------------------------------------
-
-// TODO: Replace in-memory storage with DynamoDB putItem / getItem
-const pricingHistory = [];
 
 // ---------------------------------------------------------------------------
 // Routes
@@ -46,24 +72,14 @@ const pricingHistory = [];
  * POST /api/price
  *
  * Expects JSON body:
- *   {
- *     productId: string,
- *     ownPrice: number,
- *     competitorPrice: number,
- *     elasticity?: number   // defaults to 1.5 if omitted
- *   }
+ *   { productId, ownPrice, competitorPrice, elasticity? }
  *
- * Returns JSON:
- *   {
- *     productId: string,
- *     optimalPriceBand: number,
- *     markdownTiming: string
- *   }
+ * Returns:
+ *   { productId, optimalPriceBand, markdownTiming }
  */
-app.post("/api/price", (req, res) => {
+app.post("/api/price", async (req, res) => {
   const { productId, ownPrice, competitorPrice, elasticity } = req.body;
 
-  // --- Input validation ---------------------------------------------------
   if (!productId || ownPrice == null || competitorPrice == null) {
     return res.status(400).json({
       error:
@@ -87,14 +103,12 @@ app.post("/api/price", (req, res) => {
     });
   }
 
-  // --- Calculate optimal pricing ------------------------------------------
   const { optimalPriceBand, markdownTiming } = calculatePricing(
     ownPriceNum,
     competitorPriceNum,
     elasticityNum
   );
 
-  // Build the result object
   const result = {
     productId,
     ownPrice: ownPriceNum,
@@ -105,8 +119,28 @@ app.post("/api/price", (req, res) => {
     timestamp: new Date().toISOString(),
   };
 
-  // TODO: Replace with DynamoDB putItem to persist pricing recommendations
-  pricingHistory.push(result);
+  if (useDynamo) {
+    try {
+      await dynamoDb.send(
+        new PutCommand({
+          TableName: DYNAMODB_TABLE,
+          Item: {
+            productId: result.productId,
+            timestamp: result.timestamp,
+            ownPrice: result.ownPrice,
+            competitorPrice: result.competitorPrice,
+            elasticity: result.elasticity,
+            optimalPriceBand: result.optimalPriceBand,
+            markdownTiming: result.markdownTiming,
+          },
+        })
+      );
+    } catch (err) {
+      console.error("DynamoDB putItem failed:", err.message);
+    }
+  } else {
+    pricingHistory.push(result);
+  }
 
   return res.json({
     productId: result.productId,
@@ -118,19 +152,28 @@ app.post("/api/price", (req, res) => {
 /**
  * GET /api/price/history
  *
- * Returns the in-memory pricing history (demo only).
- * TODO: Replace with DynamoDB scan / query
+ * Returns pricing history from DynamoDB (or in-memory fallback).
  */
-app.get("/api/price/history", (_req, res) => {
+app.get("/api/price/history", async (_req, res) => {
+  if (useDynamo) {
+    try {
+      const data = await dynamoDb.send(
+        new ScanCommand({ TableName: DYNAMODB_TABLE })
+      );
+      return res.json(data.Items || []);
+    } catch (err) {
+      console.error("DynamoDB scan failed:", err.message);
+      return res.status(500).json({ error: "Failed to fetch history from DynamoDB." });
+    }
+  }
   return res.json(pricingHistory);
 });
 
 /**
  * GET /api/health
- * Simple health-check endpoint.
  */
 app.get("/api/health", (_req, res) => {
-  return res.json({ status: "ok" });
+  return res.json({ status: "ok", dynamo: useDynamo });
 });
 
 // ---------------------------------------------------------------------------
