@@ -16,7 +16,7 @@ function AiInsight({ title = "AI Strategy Insight", text, loading, error }) {
       <div className="ai-insight-header">
         <Sparkles size={18} className="ai-insight-icon" />
         <h3 className="ai-insight-title">{title}</h3>
-        <span className="ai-badge">Gemini AI</span>
+        <span className="ai-badge">Nova AI</span>
       </div>
 
       <div className="ai-insight-body">

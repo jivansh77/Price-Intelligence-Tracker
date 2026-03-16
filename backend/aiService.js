@@ -58,7 +58,7 @@ Rules:
     const text = result.response.text();
     return { insight: text.trim() };
   } catch (err) {
-    console.error("Gemini pricing insight error:", err.message);
+    console.error("AI pricing insight error:", err.message);
     return { insight: null, error: "Failed to generate AI insight" };
   }
 }
@@ -111,7 +111,7 @@ Rules:
     const text = result.response.text();
     return { summary: text.trim() };
   } catch (err) {
-    console.error("Gemini dashboard summary error:", err.message);
+    console.error("AI dashboard summary error:", err.message);
     return { summary: null, error: "Failed to generate AI summary" };
   }
 }
