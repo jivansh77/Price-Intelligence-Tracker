@@ -79,9 +79,9 @@ function PricingHistory() {
         .reverse()
         .map(item => ({
           date: new Date(item.timestamp).toLocaleDateString(),
-          optimal: item.optimalPriceBand,
-          own: item.ownPrice,
-          competitor: item.competitorPrice
+          optimal: Number(item.optimalPriceBand),
+          own: Number(item.ownPrice),
+          competitor: Number(item.competitorPrice)
         }))
     : [];
 
@@ -186,9 +186,9 @@ function PricingHistory() {
                   <tr key={index}>
                     <td className="product-id">{item.productId}</td>
                     <td>{new Date(item.timestamp).toLocaleDateString()}</td>
-                    <td>${item.ownPrice.toFixed(2)}</td>
-                    <td>${item.competitorPrice.toFixed(2)}</td>
-                    <td className="optimal-price">${item.optimalPriceBand.toFixed(2)}</td>
+                    <td>${Number(item.ownPrice).toFixed(2)}</td>
+                    <td>${Number(item.competitorPrice).toFixed(2)}</td>
+                    <td className="optimal-price">${Number(item.optimalPriceBand).toFixed(2)}</td>
                     <td>
                       <span className={`timing-badge ${item.markdownTiming.toLowerCase()}`}>
                         {item.markdownTiming}

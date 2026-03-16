@@ -272,9 +272,9 @@ function BulkAnalysis() {
                 {results.products.map((product, index) => (
                   <tr key={index}>
                     <td>{product.productId}</td>
-                    <td>${product.ownPrice.toFixed(2)}</td>
-                    <td>${product.competitorPrice.toFixed(2)}</td>
-                    <td>${product.optimalPriceBand.toFixed(2)}</td>
+                    <td>${Number(product.ownPrice).toFixed(2)}</td>
+                    <td>${Number(product.competitorPrice).toFixed(2)}</td>
+                    <td>${Number(product.optimalPriceBand).toFixed(2)}</td>
                     <td>
                       <span className={`timing-badge ${product.markdownTiming.toLowerCase()}`}>
                         {product.markdownTiming}

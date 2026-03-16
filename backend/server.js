@@ -308,7 +308,7 @@ app.get("/api/analytics/dashboard", async (req, res) => {
       markdownStats,
       recentProducts: uniqueProducts.slice(-10),
       avgOptimalPrice: allData.length > 0 ? 
-        (allData.reduce((sum, item) => sum + item.optimalPriceBand, 0) / allData.length).toFixed(2) : 0
+        (allData.reduce((sum, item) => sum + Number(item.optimalPriceBand), 0) / allData.length).toFixed(2) : 0
     });
   } catch (error) {
     console.error("Dashboard error:", error);
