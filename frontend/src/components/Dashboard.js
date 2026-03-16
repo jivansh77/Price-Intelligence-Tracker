@@ -22,7 +22,7 @@ import "./Dashboard.css";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658'];
+const COLORS = ['#ef4444', '#f59e0b', '#22c55e'];
 
 function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
@@ -147,7 +147,7 @@ function Dashboard() {
                 labelLine={false}
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 outerRadius={80}
-                fill="#8884d8"
+                fill="#2563eb"
                 dataKey="value"
               >
                 {pieData.map((entry, index) => (
@@ -167,7 +167,7 @@ function Dashboard() {
               <XAxis dataKey="product" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="analyses" fill="#8884d8" />
+              <Bar dataKey="analyses" fill="#2563eb" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

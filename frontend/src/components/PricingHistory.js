@@ -146,9 +146,9 @@ function PricingHistory() {
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="optimal" stroke="#8884d8" name="Optimal Price" />
-              <Line type="monotone" dataKey="own" stroke="#82ca9d" name="Your Price" />
-              <Line type="monotone" dataKey="competitor" stroke="#ffc658" name="Competitor Price" />
+              <Line type="monotone" dataKey="optimal" stroke="#2563eb" strokeWidth={2} name="Optimal Price" />
+              <Line type="monotone" dataKey="own" stroke="#22c55e" strokeWidth={2} name="Your Price" />
+              <Line type="monotone" dataKey="competitor" stroke="#f59e0b" strokeWidth={2} name="Competitor Price" />
             </LineChart>
           </ResponsiveContainer>
         </div>
