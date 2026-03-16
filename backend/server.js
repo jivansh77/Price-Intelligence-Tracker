@@ -16,6 +16,7 @@ const {
   ScanCommand,
 } = require("@aws-sdk/lib-dynamodb");
 const { calculatePricing, analyzePriceTrends, bulkPricingAnalysis } = require("./pricingLogic");
+const { generatePricingInsight, generateDashboardSummary } = require("./aiService");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -312,6 +313,65 @@ app.get("/api/analytics/dashboard", async (req, res) => {
   } catch (error) {
     console.error("Dashboard error:", error);
     return res.status(500).json({ error: "Failed to load dashboard data" });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// AI-powered insight routes
+// ---------------------------------------------------------------------------
+
+/**
+ * POST /api/ai/pricing-insight
+ *
+ * Generates a Gemini-powered strategic insight for a single pricing analysis.
+ */
+app.post("/api/ai/pricing-insight", async (req, res) => {
+  const { productId, ownPrice, competitorPrice, elasticity, optimalPriceBand, markdownTiming } = req.body;
+
+  if (!productId || optimalPriceBand == null) {
+    return res.status(400).json({ error: "Missing pricing data for AI insight." });
+  }
+
+  try {
+    const result = await generatePricingInsight({
+      productId,
+      ownPrice,
+      competitorPrice,
+      elasticity,
+      optimalPriceBand,
+      markdownTiming,
+    });
+    return res.json(result);
+  } catch (err) {
+    console.error("AI pricing insight route error:", err.message);
+    return res.status(500).json({ insight: null, error: "AI service unavailable" });
+  }
+});
+
+/**
+ * POST /api/ai/dashboard-summary
+ *
+ * Generates a Gemini-powered portfolio summary from dashboard stats.
+ */
+app.post("/api/ai/dashboard-summary", async (req, res) => {
+  const { totalAnalyses, uniqueProducts, last30Days, avgOptimalPrice, markdownStats } = req.body;
+
+  if (totalAnalyses == null) {
+    return res.status(400).json({ error: "Missing dashboard data for AI summary." });
+  }
+
+  try {
+    const result = await generateDashboardSummary({
+      totalAnalyses,
+      uniqueProducts,
+      last30Days,
+      avgOptimalPrice,
+      markdownStats,
+    });
+    return res.json(result);
+  } catch (err) {
+    console.error("AI dashboard summary route error:", err.message);
+    return res.status(500).json({ summary: null, error: "AI service unavailable" });
   }
 });
 

@@ -18,6 +18,7 @@ import {
   Cell
 } from "recharts";
 import { TrendingUp, Package, Clock, AlertTriangle } from "lucide-react";
+import AiInsight from "./AiInsight";
 import "./Dashboard.css";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
@@ -29,9 +30,35 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [aiSummary, setAiSummary] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  const fetchAiSummary = async (stats) => {
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const resp = await fetch(`${API_URL}/api/ai/dashboard-summary`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(stats),
+      });
+      const data = await resp.json();
+      if (data.summary) {
+        setAiSummary(data.summary);
+      } else {
+        setAiError(data.error || "AI summary unavailable");
+      }
+    } catch {
+      setAiError("Could not reach AI service");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -44,6 +71,9 @@ function Dashboard() {
       
       const data = await response.json();
       setDashboardData(data);
+      if (data.totalAnalyses > 0) {
+        fetchAiSummary(data);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -133,6 +163,18 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* AI Portfolio Insights */}
+      {(aiSummary || aiLoading || aiError) && (
+        <div style={{ marginBottom: '1.25rem' }}>
+          <AiInsight
+            title="AI Portfolio Insights"
+            text={aiSummary}
+            loading={aiLoading}
+            error={aiError}
+          />
+        </div>
+      )}
 
       {/* Charts Section */}
       <div className="charts-grid">

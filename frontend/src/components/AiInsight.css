@@ -1,0 +1,123 @@
+/* AI Insight Card */
+
+.ai-insight-card {
+  background: linear-gradient(135deg, var(--blue-50) 0%, white 60%);
+  border: 1px solid var(--blue-200);
+  border-left: 4px solid var(--blue-500);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  animation: aiFadeIn 0.4s ease;
+}
+
+@keyframes aiFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.ai-insight-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.ai-insight-icon {
+  color: var(--blue-500);
+  flex-shrink: 0;
+}
+
+.ai-insight-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.ai-badge {
+  margin-left: auto;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--blue-600);
+  background: var(--blue-100);
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+/* Body */
+.ai-insight-body {
+  min-height: 48px;
+}
+
+.ai-insight-text p {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--gray-700);
+  margin: 0 0 0.5rem 0;
+}
+
+.ai-insight-text p:last-child {
+  margin-bottom: 0;
+}
+
+/* Error */
+.ai-error-text {
+  font-size: 0.85rem;
+  color: var(--gray-400);
+  margin: 0;
+  font-style: italic;
+}
+
+/* Loading skeleton */
+.ai-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.ai-shimmer-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--blue-100) 25%,
+    var(--blue-50) 50%,
+    var(--blue-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  width: 100%;
+}
+
+.ai-shimmer-line.short {
+  width: 75%;
+}
+
+.ai-shimmer-line.shorter {
+  width: 55%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.ai-loading-label {
+  font-size: 0.8rem;
+  color: var(--blue-400);
+  margin: 0.25rem 0 0 0;
+  font-weight: 500;
+}

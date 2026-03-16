@@ -8,12 +8,12 @@
 
 import React, { useState } from "react";
 import ResultCard from "./ResultCard";
+import AiInsight from "./AiInsight";
 import "./PricingForm.css";
 
-// Set REACT_APP_BACKEND_URL to the EC2 public address for production builds.
-const API_URL = process.env.REACT_APP_BACKEND_URL 
-  ? `${process.env.REACT_APP_BACKEND_URL}/api/price`
-  : "http://localhost:5000/api/price";
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const API_URL = `${BASE_URL}/api/price`;
+const AI_INSIGHT_URL = `${BASE_URL}/api/ai/pricing-insight`;
 
 function PricingForm() {
   // --- Form state ---------------------------------------------------------
@@ -27,11 +27,45 @@ function PricingForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // --- AI insight state ---------------------------------------------------
+  const [aiInsight, setAiInsight] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
+  const fetchAiInsight = async (pricingResult, payload) => {
+    setAiInsight(null);
+    setAiError(null);
+    setAiLoading(true);
+    try {
+      const resp = await fetch(AI_INSIGHT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...payload,
+          optimalPriceBand: pricingResult.optimalPriceBand,
+          markdownTiming: pricingResult.markdownTiming,
+        }),
+      });
+      const data = await resp.json();
+      if (data.insight) {
+        setAiInsight(data.insight);
+      } else {
+        setAiError(data.error || "AI insight unavailable");
+      }
+    } catch {
+      setAiError("Could not reach AI service");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   // --- Form submission handler --------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setResult(null);
+    setAiInsight(null);
+    setAiError(null);
     setLoading(true);
 
     const payload = {
@@ -40,7 +74,6 @@ function PricingForm() {
       competitorPrice: parseFloat(competitorPrice),
     };
 
-    // Only include elasticity if the user provided a value.
     if (elasticity.trim() !== "") {
       payload.elasticity = parseFloat(elasticity);
     }
@@ -59,6 +92,7 @@ function PricingForm() {
       }
 
       setResult(data);
+      fetchAiInsight(data, payload);
     } catch (err) {
       setError(err.message || "Failed to connect to the server.");
     } finally {
@@ -148,6 +182,16 @@ function PricingForm() {
 
         {/* Result card */}
         {result && <ResultCard result={result} />}
+
+        {/* AI Insight */}
+        {(result || aiLoading) && (
+          <AiInsight
+            title="AI Strategy Insight"
+            text={aiInsight}
+            loading={aiLoading}
+            error={aiError}
+          />
+        )}
       </div>
     </div>
   );
