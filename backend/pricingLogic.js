@@ -53,3 +53,96 @@ function calculatePricing(ownPrice, competitorPrice, elasticity = 1.5) {
 }
 
 module.exports = { calculatePricing };
+
+/**
+ * Calculate price trend analysis for historical data
+ */
+function analyzePriceTrends(historicalData) {
+  if (!historicalData || historicalData.length < 2) {
+    return { trend: 'insufficient_data', recommendation: 'Need more data points' };
+  }
+
+  const sortedData = historicalData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  const recent = sortedData.slice(-5); // Last 5 entries
+
+  const avgOptimalPrice = recent.reduce((sum, item) => sum + item.optimalPriceBand, 0) / recent.length;
+  const priceVariance = recent.reduce((sum, item) => sum + Math.pow(item.optimalPriceBand - avgOptimalPrice, 2), 0) / recent.length;
+
+  let trend = 'stable';
+  if (priceVariance > avgOptimalPrice * 0.1) {
+    trend = 'volatile';
+  } else if (recent[recent.length - 1].optimalPriceBand > recent[0].optimalPriceBand * 1.05) {
+    trend = 'increasing';
+  } else if (recent[recent.length - 1].optimalPriceBand < recent[0].optimalPriceBand * 0.95) {
+    trend = 'decreasing';
+  }
+
+  return {
+    trend,
+    avgOptimalPrice: parseFloat(avgOptimalPrice.toFixed(2)),
+    priceVariance: parseFloat(priceVariance.toFixed(2)),
+    recommendation: getTrendRecommendation(trend)
+  };
+}
+
+function getTrendRecommendation(trend) {
+  switch (trend) {
+    case 'increasing':
+      return 'Market prices trending up - consider gradual price increases';
+    case 'decreasing':
+      return 'Market prices declining - monitor competitors closely';
+    case 'volatile':
+      return 'High price volatility detected - implement dynamic pricing strategy';
+    default:
+      return 'Stable pricing environment - maintain current strategy';
+  }
+}
+
+/**
+ * Bulk pricing analysis for multiple products
+ */
+function bulkPricingAnalysis(products) {
+  const results = products.map(product => {
+    const { productId, ownPrice, competitorPrice, elasticity = 1.5 } = product;
+    const pricing = calculatePricing(ownPrice, competitorPrice, elasticity);
+
+    return {
+      productId,
+      ownPrice,
+      competitorPrice,
+      elasticity,
+      ...pricing,
+      priceGap: ((ownPrice - competitorPrice) / competitorPrice * 100).toFixed(1),
+      potentialRevenue: calculatePotentialRevenue(ownPrice, pricing.optimalPriceBand, elasticity)
+    };
+  });
+
+  return {
+    products: results,
+    summary: {
+      totalProducts: results.length,
+      immediateActions: results.filter(p => p.markdownTiming === 'Immediate').length,
+      holdRecommendations: results.filter(p => p.markdownTiming === 'Hold').length,
+      monitorRecommendations: results.filter(p => p.markdownTiming === 'Monitor').length,
+      avgPriceGap: (results.reduce((sum, p) => sum + parseFloat(p.priceGap), 0) / results.length).toFixed(1)
+    }
+  };
+}
+
+function calculatePotentialRevenue(currentPrice, optimalPrice, elasticity) {
+  const priceChange = (optimalPrice - currentPrice) / currentPrice;
+  const demandChange = -elasticity * priceChange;
+  const revenueChange = (1 + priceChange) * (1 + demandChange) - 1;
+
+  return {
+    priceChange: (priceChange * 100).toFixed(1),
+    demandChange: (demandChange * 100).toFixed(1),
+    revenueImpact: (revenueChange * 100).toFixed(1)
+  };
+}
+
+module.exports = {
+  calculatePricing,
+  analyzePriceTrends,
+  bulkPricingAnalysis
+};

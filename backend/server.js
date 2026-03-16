@@ -15,7 +15,7 @@ const {
   PutCommand,
   ScanCommand,
 } = require("@aws-sdk/lib-dynamodb");
-const { calculatePricing } = require("./pricingLogic");
+const { calculatePricing, analyzePriceTrends, bulkPricingAnalysis } = require("./pricingLogic");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -167,6 +167,152 @@ app.get("/api/price/history", async (_req, res) => {
     }
   }
   return res.json(pricingHistory);
+});
+
+/**
+ * POST /api/price/bulk
+ * 
+ * Bulk pricing analysis for multiple products
+ * Expects JSON body: { products: [{ productId, ownPrice, competitorPrice, elasticity? }] }
+ */
+app.post("/api/price/bulk", async (req, res) => {
+  const { products } = req.body;
+
+  if (!products || !Array.isArray(products) || products.length === 0) {
+    return res.status(400).json({
+      error: "Please provide an array of products with productId, ownPrice, and competitorPrice."
+    });
+  }
+
+  try {
+    const analysis = bulkPricingAnalysis(products);
+    
+    // Store bulk analysis results
+    if (useDynamo) {
+      const timestamp = new Date().toISOString();
+      for (const product of analysis.products) {
+        try {
+          await dynamoDb.send(
+            new PutCommand({
+              TableName: DYNAMODB_TABLE,
+              Item: {
+                productId: product.productId,
+                timestamp,
+                ownPrice: product.ownPrice,
+                competitorPrice: product.competitorPrice,
+                elasticity: product.elasticity,
+                optimalPriceBand: product.optimalPriceBand,
+                markdownTiming: product.markdownTiming,
+                priceGap: parseFloat(product.priceGap),
+                bulkAnalysis: true
+              }
+            })
+          );
+        } catch (err) {
+          console.error(`Failed to store product ${product.productId}:`, err.message);
+        }
+      }
+    } else {
+      analysis.products.forEach(product => {
+        pricingHistory.push({
+          ...product,
+          timestamp: new Date().toISOString(),
+          bulkAnalysis: true
+        });
+      });
+    }
+
+    return res.json(analysis);
+  } catch (error) {
+    console.error("Bulk analysis error:", error);
+    return res.status(500).json({ error: "Failed to process bulk analysis" });
+  }
+});
+
+/**
+ * GET /api/analytics/trends/:productId
+ * 
+ * Get pricing trends for a specific product
+ */
+app.get("/api/analytics/trends/:productId", async (req, res) => {
+  const { productId } = req.params;
+
+  try {
+    let historicalData = [];
+
+    if (useDynamo) {
+      const data = await dynamoDb.send(
+        new ScanCommand({
+          TableName: DYNAMODB_TABLE,
+          FilterExpression: "productId = :pid",
+          ExpressionAttributeValues: {
+            ":pid": productId
+          }
+        })
+      );
+      historicalData = data.Items || [];
+    } else {
+      historicalData = pricingHistory.filter(item => item.productId === productId);
+    }
+
+    const trends = analyzePriceTrends(historicalData);
+    
+    return res.json({
+      productId,
+      dataPoints: historicalData.length,
+      trends,
+      history: historicalData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 20)
+    });
+  } catch (error) {
+    console.error("Trends analysis error:", error);
+    return res.status(500).json({ error: "Failed to analyze trends" });
+  }
+});
+
+/**
+ * GET /api/analytics/dashboard
+ * 
+ * Dashboard summary statistics
+ */
+app.get("/api/analytics/dashboard", async (req, res) => {
+  try {
+    let allData = [];
+
+    if (useDynamo) {
+      const data = await dynamoDb.send(new ScanCommand({ TableName: DYNAMODB_TABLE }));
+      allData = data.Items || [];
+    } else {
+      allData = pricingHistory;
+    }
+
+    const last30Days = allData.filter(item => {
+      const itemDate = new Date(item.timestamp);
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      return itemDate >= thirtyDaysAgo;
+    });
+
+    const uniqueProducts = [...new Set(allData.map(item => item.productId))];
+    
+    const markdownStats = {
+      immediate: allData.filter(item => item.markdownTiming === 'Immediate').length,
+      hold: allData.filter(item => item.markdownTiming === 'Hold').length,
+      monitor: allData.filter(item => item.markdownTiming === 'Monitor').length
+    };
+
+    return res.json({
+      totalAnalyses: allData.length,
+      last30Days: last30Days.length,
+      uniqueProducts: uniqueProducts.length,
+      markdownStats,
+      recentProducts: uniqueProducts.slice(-10),
+      avgOptimalPrice: allData.length > 0 ? 
+        (allData.reduce((sum, item) => sum + item.optimalPriceBand, 0) / allData.length).toFixed(2) : 0
+    });
+  } catch (error) {
+    console.error("Dashboard error:", error);
+    return res.status(500).json({ error: "Failed to load dashboard data" });
+  }
 });
 
 /**

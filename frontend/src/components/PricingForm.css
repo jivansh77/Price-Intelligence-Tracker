@@ -1,109 +1,130 @@
-/* =========================================================================
-   PricingForm Styles
-   ========================================================================= */
+/* Pricing Calculator Styles */
 
-.pricing-form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.pricing-calculator {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-/* --- Form card ------------------------------------------------------------ */
+.calculator-header {
+  margin-bottom: 2rem;
+}
 
+.calculator-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.calculator-header p {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.calculator-content {
+  display: grid;
+  gap: 2rem;
+}
+
+/* Form Styles */
 .pricing-form {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.15);
-  border-radius: 1rem;
+  background: white;
   padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .form-heading {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: #1f2937;
+  margin: 0 0 1.5rem 0;
 }
 
-/* --- Form groups ---------------------------------------------------------- */
-
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
-  font-size: 0.85rem;
+  display: block;
   font-weight: 500;
-  color: #94a3b8;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .optional-tag {
-  font-size: 0.7rem;
+  color: #6b7280;
   font-weight: 400;
-  color: #64748b;
-  margin-left: 0.35rem;
+  font-size: 0.75rem;
 }
 
 .form-group input {
-  background: #0f172a;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 0.5rem;
-  padding: 0.65rem 0.85rem;
-  font-size: 0.95rem;
-  color: #e2e8f0;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.form-group input::placeholder {
-  color: #475569;
+  width: 100%;
+  padding: 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-group input:focus {
-  border-color: #38bdf8;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* --- Submit button -------------------------------------------------------- */
+.form-group small {
+  display: block;
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
 
 .submit-btn {
-  margin-top: 0.5rem;
-  padding: 0.75rem;
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border: none;
-  border-radius: 0.5rem;
-  background: linear-gradient(135deg, #38bdf8, #818cf8);
-  color: #0f172a;
-  font-size: 0.95rem;
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.1s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .submit-btn:hover:not(:disabled) {
-  opacity: 0.9;
   transform: translateY(-1px);
-}
-
-.submit-btn:active:not(:disabled) {
-  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .submit-btn:disabled {
-  opacity: 0.6;
+  background: #9ca3af;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-/* --- Error message -------------------------------------------------------- */
-
+/* Error Message */
 .error-message {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  border-radius: 0.5rem;
-  padding: 0.85rem 1rem;
-  font-size: 0.9rem;
-  color: #fca5a5;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pricing-form {
+    padding: 1.5rem;
+  }
+  
+  .calculator-header h1 {
+    font-size: 1.75rem;
+  }
 }

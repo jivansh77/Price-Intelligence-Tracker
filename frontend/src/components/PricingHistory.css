@@ -1,0 +1,256 @@
+/* Pricing History Styles */
+
+.pricing-history {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.history-header {
+  margin-bottom: 2rem;
+}
+
+.history-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.history-header p {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Filters Section */
+.filters-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.product-filter,
+.date-filter {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: white;
+  min-width: 150px;
+  transition: border-color 0.2s ease;
+}
+
+.product-filter:focus,
+.date-filter:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Chart Section */
+.chart-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.chart-section h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+/* History Table */
+.history-table {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.record-count {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.history-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.history-table th,
+.history-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.history-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+  position: sticky;
+  top: 0;
+}
+
+.history-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.product-id {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.optimal-price {
+  font-weight: 600;
+  color: #059669;
+}
+
+.timing-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.timing-badge.immediate {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.timing-badge.hold {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.timing-badge.monitor {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+/* No Data State */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.no-data svg {
+  margin-bottom: 1rem;
+}
+
+.no-data h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.no-data p {
+  margin: 0;
+}
+
+/* Loading State */
+.history-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filters-section {
+    flex-direction: column;
+  }
+  
+  .search-box {
+    min-width: auto;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .history-table th,
+  .history-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}

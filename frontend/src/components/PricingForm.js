@@ -3,6 +3,7 @@
  *
  * Renders a form for users to input their product pricing data, sends it to
  * the backend API, and displays the optimal price band + markdown timing.
+ * Updated for dashboard layout.
  */
 
 import React, { useState } from "react";
@@ -66,82 +67,92 @@ function PricingForm() {
   };
 
   return (
-    <section className="pricing-form-section">
-      <form className="pricing-form" onSubmit={handleSubmit}>
-        <h2 className="form-heading">Enter Product Details</h2>
+    <div className="pricing-calculator">
+      <div className="calculator-header">
+        <h1>Price Calculator</h1>
+        <p>Get instant pricing recommendations for your products</p>
+      </div>
 
-        {/* Product ID */}
-        <div className="form-group">
-          <label htmlFor="productId">Product ID</label>
-          <input
-            id="productId"
-            type="text"
-            placeholder="e.g. SKU-1234"
-            value={productId}
-            onChange={(e) => setProductId(e.target.value)}
-            required
-          />
-        </div>
+      <div className="calculator-content">
+        <form className="pricing-form" onSubmit={handleSubmit}>
+          <h2 className="form-heading">Enter Product Details</h2>
 
-        {/* Own Price */}
-        <div className="form-group">
-          <label htmlFor="ownPrice">Your Price ($)</label>
-          <input
-            id="ownPrice"
-            type="number"
-            step="0.01"
-            min="0.01"
-            placeholder="e.g. 49.99"
-            value={ownPrice}
-            onChange={(e) => setOwnPrice(e.target.value)}
-            required
-          />
-        </div>
+          {/* Product ID */}
+          <div className="form-group">
+            <label htmlFor="productId">Product ID</label>
+            <input
+              id="productId"
+              type="text"
+              placeholder="e.g. SKU-1234"
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+              required
+            />
+          </div>
 
-        {/* Competitor Price */}
-        <div className="form-group">
-          <label htmlFor="competitorPrice">Competitor Price ($)</label>
-          <input
-            id="competitorPrice"
-            type="number"
-            step="0.01"
-            min="0.01"
-            placeholder="e.g. 44.99"
-            value={competitorPrice}
-            onChange={(e) => setCompetitorPrice(e.target.value)}
-            required
-          />
-        </div>
+          {/* Own Price */}
+          <div className="form-group">
+            <label htmlFor="ownPrice">Your Price ($)</label>
+            <input
+              id="ownPrice"
+              type="number"
+              step="0.01"
+              min="0.01"
+              placeholder="e.g. 49.99"
+              value={ownPrice}
+              onChange={(e) => setOwnPrice(e.target.value)}
+              required
+            />
+          </div>
 
-        {/* Elasticity (optional) */}
-        <div className="form-group">
-          <label htmlFor="elasticity">
-            Demand Elasticity <span className="optional-tag">optional</span>
-          </label>
-          <input
-            id="elasticity"
-            type="number"
-            step="0.1"
-            min="0"
-            placeholder="Default: 1.5"
-            value={elasticity}
-            onChange={(e) => setElasticity(e.target.value)}
-          />
-        </div>
+          {/* Competitor Price */}
+          <div className="form-group">
+            <label htmlFor="competitorPrice">Competitor Price ($)</label>
+            <input
+              id="competitorPrice"
+              type="number"
+              step="0.01"
+              min="0.01"
+              placeholder="e.g. 44.99"
+              value={competitorPrice}
+              onChange={(e) => setCompetitorPrice(e.target.value)}
+              required
+            />
+          </div>
 
-        {/* Submit button */}
-        <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? "Analyzing..." : "Get Recommendation"}
-        </button>
-      </form>
+          {/* Elasticity (optional) */}
+          <div className="form-group">
+            <label htmlFor="elasticity">
+              Demand Elasticity <span className="optional-tag">optional</span>
+            </label>
+            <input
+              id="elasticity"
+              type="number"
+              step="0.1"
+              min="0"
+              placeholder="Default: 1.5"
+              value={elasticity}
+              onChange={(e) => setElasticity(e.target.value)}
+            />
+            <small>Higher values (>1) indicate elastic demand, lower values (<1) indicate inelastic demand</small>
+          </div>
 
-      {/* Error message */}
-      {error && <div className="error-message">{error}</div>}
+          {/* Submit button */}
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? "Analyzing..." : "Get Recommendation"}
+          </button>
+        </form>
 
-      {/* Result card */}
-      {result && <ResultCard result={result} />}
-    </section>
+        {/* Error message */}
+        {error && <div className="error-message">{error}</div>}
+
+        {/* Result card */}
+        {result && <ResultCard result={result} />}
+      </div>
+    </div>
   );
 }
+
+export default PricingForm;
 
 export default PricingForm;
