@@ -134,7 +134,7 @@ function PricingForm() {
               value={elasticity}
               onChange={(e) => setElasticity(e.target.value)}
             />
-            <small>Higher values (>1) indicate elastic demand, lower values (<1) indicate inelastic demand</small>
+            <small>Higher values (&gt;1) indicate elastic demand, lower values (&lt;1) indicate inelastic demand</small>
           </div>
 
           {/* Submit button */}
@@ -152,7 +152,5 @@ function PricingForm() {
     </div>
   );
 }
-
-export default PricingForm;
 
 export default PricingForm;
